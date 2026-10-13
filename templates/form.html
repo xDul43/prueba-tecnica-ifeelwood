@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Editar' if editar else 'Nuevo' }} cliente{% endblock %}
+{% macro campo(nombre, etiqueta, tipo='text', extra='') %}
+  <label class="{{ 'error' if errores.get(nombre) }}">
+    <span>{{ etiqueta }} *</span>
+    <input type="{{ tipo }}" name="{{ nombre }}" value="{{ c.get(nombre, '') }}" {{ extra|safe }}>
+    {% if errores.get(nombre) %}<em>{{ errores[nombre] }}</em>{% endif %}
+  </label>
+{% endmacro %}
+{% block contenido %}
+<p><a href="{{ url_for('detalle', cliente_id=c.id) if editar else url_for('lista') }}">← Cancelar</a></p>
+<h1>{{ 'Editar cliente #' ~ c.id if editar else 'Nuevo cliente' }}</h1>
+
+<form class="formulario" method="post" novalidate>
+  {{ campo('nombre', 'Nombre') }}
+  {{ campo('apellidos', 'Apellidos') }}
+  {{ campo('empresa', 'Empresa / razón social') }}
+  {{ campo('email', 'Correo electrónico', 'email') }}
+  {{ campo('telefono', 'Teléfono', 'tel') }}
+  <label class="{{ 'error' if errores.get('estado') }}">
+    <span>Estado *</span>
+    <select name="estado">
+      {% for e in estados %}<option {{ 'selected' if c.get('estado') == e }}>{{ e }}</option>{% endfor %}
+    </select>
+    {% if errores.get('estado') %}<em>{{ errores['estado'] }}</em>{% endif %}
+  </label>
+  {{ campo('direccion', 'Dirección') }}
+  {{ campo('pais', 'País') }}
+  {{ campo('comercial', 'Comercial asignado') }}
+  <label class="{{ 'error' if errores.get('fecha_alta') }}">
+    <span>Fecha de alta</span>
+    <input type="date" name="fecha_alta" value="{{ c.get('fecha_alta', '') }}">
+    {% if errores.get('fecha_alta') %}<em>{{ errores['fecha_alta'] }}</em>{% endif %}
+  </label>
+  {{ campo('facturacion', 'Facturación acumulada (€)', 'text', 'inputmode="decimal"') }}
+  <div class="pie"><button class="btn primario" type="submit">{{ 'Guardar cambios' if editar else 'Crear cliente' }}</button></div>
+</form>
+{% endblock %}

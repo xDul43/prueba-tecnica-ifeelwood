@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h1>No encontrado</h1>
+<p>El cliente o la página que buscas no existe (puede que haya sido eliminado).</p>
+<p><a class="btn primario" href="{{ url_for('lista') }}">Volver al listado</a></p>
+{% endblock %}

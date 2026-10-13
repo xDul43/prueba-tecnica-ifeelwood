@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h1>Clientes <small>{{ total }} resultado(s)</small></h1>
+
+<form class="filtros" method="get" action="{{ url_for('lista') }}">
+  <input type="search" name="q" value="{{ filtros.q }}" placeholder="Buscar por nombre, empresa o email…">
+  <select name="estado" aria-label="Estado">
+    <option value="">Todos los estados</option>
+    {% for e in estados %}<option {{ 'selected' if filtros.estado == e }}>{{ e }}</option>{% endfor %}
+  </select>
+  <select name="pais" aria-label="País">
+    <option value="">Todos los países</option>
+    {% for p in paises %}<option {{ 'selected' if filtros.pais == p }}>{{ p }}</option>{% endfor %}
+  </select>
+  <select name="comercial" aria-label="Comercial">
+    <option value="">Todos los comerciales</option>
+    {% for c in comerciales %}<option {{ 'selected' if filtros.comercial == c }}>{{ c }}</option>{% endfor %}
+  </select>
+  <button class="btn primario" type="submit">Filtrar</button>
+  <a class="btn" href="{{ url_for('lista') }}">Limpiar</a>
+</form>
+
+{% if clientes %}
+<div class="tabla-wrap">
+<table>
+  <thead>
+    <tr><th>ID</th><th>Contacto</th><th>Empresa</th><th>Email</th><th>País</th>
+        <th>Comercial</th><th>Estado</th><th class="num">Facturación</th><th>Acciones</th></tr>
+  </thead>
+  <tbody>
+  {% for c in clientes %}
+    <tr>
+      <td>{{ c.id }}</td>
+      <td>{{ c.nombre }} {{ c.apellidos }}</td>
+      <td>{{ c.empresa }}</td>
+      <td>{{ c.email }}</td>
+      <td>{{ c.pais }}</td>
+      <td>{{ c.comercial }}</td>
+      <td><span class="chip {{ c.estado|lower }}">{{ c.estado }}</span></td>
+      <td class="num">{{ '{:,.2f}'.format(c.facturacion).replace(',', 'X').replace('.', ',').replace('X', '.') }} €</td>
+      <td class="acciones">
+        <a href="{{ url_for('detalle', cliente_id=c.id) }}">Ver</a>
+        <a href="{{ url_for('editar', cliente_id=c.id) }}">Editar</a>
+        <form method="post" action="{{ url_for('eliminar', cliente_id=c.id) }}"
+              onsubmit="return confirm('¿Eliminar a {{ (c.nombre ~ ' ' ~ c.apellidos)|e }}? Esta acción no se puede deshacer.')">
+          <button class="enlace peligro" type="submit">Eliminar</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<nav class="paginacion" aria-label="Paginación">
+  {% if pagina > 1 %}<a class="btn" href="{{ url_for('lista', pagina=pagina-1, **filtros) }}">← Anterior</a>{% endif %}
+  <span>Página {{ pagina }} de {{ paginas }}</span>
+  {% if pagina < paginas %}<a class="btn" href="{{ url_for('lista', pagina=pagina+1, **filtros) }}">Siguiente →</a>{% endif %}
+</nav>
+{% else %}
+  <p class="vacio">No hay clientes que coincidan con la búsqueda.</p>
+{% endif %}
+{% endblock %}

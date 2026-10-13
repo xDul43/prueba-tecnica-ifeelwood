@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block titulo %}{{ c.nombre }} {{ c.apellidos }}{% endblock %}
+{% block contenido %}
+<p><a href="{{ url_for('lista') }}">← Volver al listado</a></p>
+<div class="cabecera">
+  <h1>{{ c.nombre }} {{ c.apellidos }} <span class="chip {{ c.estado|lower }}">{{ c.estado }}</span></h1>
+  <div class="acciones">
+    <a class="btn" href="{{ url_for('editar', cliente_id=c.id) }}">Editar</a>
+    <form method="post" action="{{ url_for('eliminar', cliente_id=c.id) }}"
+          onsubmit="return confirm('¿Eliminar este cliente? Esta acción no se puede deshacer.')">
+      <button class="btn peligro" type="submit">Eliminar</button>
+    </form>
+  </div>
+</div>
+
+<dl class="ficha">
+  <dt>ID</dt><dd>{{ c.id }}</dd>
+  <dt>Empresa</dt><dd>{{ c.empresa }}</dd>
+  <dt>Email</dt><dd>{{ c.email }}</dd>
+  <dt>Teléfono</dt><dd>{{ c.telefono }}</dd>
+  <dt>Dirección</dt><dd>{{ c.direccion }}</dd>
+  <dt>País</dt><dd>{{ c.pais }}</dd>
+  <dt>Comercial</dt><dd>{{ c.comercial }}</dd>
+  <dt>Fecha de alta</dt><dd>{{ c.fecha_alta }}</dd>
+  <dt>Facturación</dt><dd>{{ '{:,.2f}'.format(c.facturacion).replace(',', 'X').replace('.', ',').replace('X', '.') }} €</dd>
+  <dt>Última modificación</dt><dd>{{ c.fecha_modificacion }}</dd>
+</dl>
+
+<h2>Histórico de modificaciones</h2>
+{% if historial %}
+<div class="tabla-wrap">
+<table>
+  <thead><tr><th>Fecha y hora</th><th>Campo</th><th>Valor anterior</th><th>Valor nuevo</th></tr></thead>
+  <tbody>
+  {% for h in historial %}
+    <tr><td>{{ h.fecha }}</td><td>{{ h.campo }}</td><td>{{ h.valor_anterior }}</td><td>{{ h.valor_nuevo }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+  <p class="vacio">Este cliente aún no ha sido modificado.</p>
+{% endif %}
+{% endblock %}
